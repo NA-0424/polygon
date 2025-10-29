@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<head>
+    <title>正多角形作成サイト</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>多角形シミュレーション</h1>
+    <canvas id="picture" width="500" height="500"></canvas><br>
+    <label for="number">2＜N≦10の間で入力してください:</label>
+    <input type="number" id="number" value="3"><br>
+    <button id="Btn" onclick="paint()">描く</button>
+    <table id="figureTable">
+        <thead>
+            <tr><th>辺の数</th>
+            <th>内角の大きさ</th>
+            <th>外角の大きさ</th>
+            <th>頂点の数</th></tr>
+        </thead>
+        <tbody id="result"></tbody>
+    </table>
+    <script>
+        function paint(){
+            let N = document.getElementById("number").value;
+            if(2<N && N<=10){
+                N = Number(N*10);
+                if(N%10 === 0){
+                    integer_paint();
+                }else{
+                    decimal_paint();
+                }
+            }else{
+                alert("対応していません");
+            }
+        }
+
+        function integer_paint(){
+            document.getElementById("result").innerHTML = "";
+            //描く場所の取得
+            var canvas = document.getElementById("picture");
+            const ctx = canvas.getContext("2d");//構文
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            //座標の格納場所
+            var point = [];
+            //原点を求める
+            var centerX = canvas.width/2;
+            var centerY = canvas.height/2;
+            var hankei = 150;
+            //何角形かを求める
+            let N = document.getElementById("number").value;
+            N = Number(N);
+            //一つの回転角度を求める（割合）
+            var step = (2 * Math.PI) / N; //円周は2πラジアンだから、Nで割ればいいよね
+            
+            for(let i = 0; i < N; i++){
+                let zahyo = i * step - Math.PI / 2;//初期座標は12時の方向
+                let X = centerX + hankei * Math.cos(zahyo);//中心＋半径×cos(座標)
+                let Y = centerY + hankei * Math.sin(zahyo);
+                point.push({X,Y});
+            }
+            //線を描く
+            ctx.beginPath();
+            ctx.moveTo(point[0].X, point[0].Y);//初期値に移動
+            for(i = 0; i < point.length; i++){
+                ctx.lineTo(point[i].X,point[i].Y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            //表を作成しよう
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var td4 = document.createElement("td");
+
+            td1.innerHTML = N;
+            tr.appendChild(td1);
+
+            td2.innerHTML = 180 - (360 / N);
+            tr.appendChild(td2);
+
+            td3.innerHTML = 360 / N;
+            tr.appendChild(td3);
+
+            td4.innerHTML = N;
+            tr.appendChild(td4);
+
+            document.getElementById("result").appendChild(tr);
+        }
+
+        //小数バージョン
+        function decimal_paint(){
+            document.getElementById("result").innerHTML = "";
+            //描く場所の取得
+            var canvas = document.getElementById("picture");
+            const ctx = canvas.getContext("2d");//構文
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            //座標の格納場所
+            var point = [];
+            //原点を求める
+            var centerX = 200;
+            var centerY = 200;
+            var hankei = 150;
+            //何角形かを求める
+            let N = document.getElementById("number").value;
+            N = Number(N);
+            let Denominator = 10;//分母
+            let Molecule = N*10;//分子
+            let remainder = 0;
+
+            let a = 10;//分母
+            let b = N*10;//分子
+            let r = 0;
+            //最大公約数を求める
+            do{
+                r = a%b;//aをbで割ったあまり
+                a = b;//bをaに
+                b = r;//rをbに
+            }while(r !== 0);
+
+            //約分
+            let syu = Denominator / a;
+            N = Molecule / a;
+            //一つの回転角度を求める（割合）
+            var step = syu * (2 * Math.PI) / N; //円周は2πラジアンだから、Nで割ればいいよね
+            
+            for(let i = 0; i < N; i++){
+                let zahyo = i * step - Math.PI / 2;//初期座標は12時の方向
+                let X = centerX + hankei * Math.cos(zahyo);//中心＋半径×cos(座標)
+                let Y = centerY + hankei * Math.sin(zahyo);
+                point.push({X,Y});
+            }
+            //線を描く
+            ctx.beginPath();
+            ctx.moveTo(point[0].X, point[0].Y);//初期値に移動
+            for(i = 0; i < point.length; i++){
+                ctx.lineTo(point[i].X,point[i].Y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+            //表を作成しよう
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var td4 = document.createElement("td");
+
+            td1.innerHTML = N;
+            tr.appendChild(td1);
+
+            td2.innerHTML = 180 - (360 / N);
+            tr.appendChild(td2);
+
+            td3.innerHTML = 360 / N;
+            tr.appendChild(td3);
+
+            td4.innerHTML = N;
+            tr.appendChild(td4);
+
+            document.getElementById("result").appendChild(tr);
+        }
+    </script>
+</body>
+</html>
