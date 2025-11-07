@@ -77,7 +77,7 @@
             td1.innerHTML = N;
             tr.appendChild(td1);
 
-            td2.innerHTML = 180 - (360 / N);
+            td2.innerHTML = Math.floor((180 - (360 / N)) * 100) / 100;
             tr.appendChild(td2);
 
             td3.innerHTML = 360 / N;
@@ -151,7 +151,7 @@
             td1.innerHTML = point.length;
             tr.appendChild(td1);
 
-            td2.innerHTML = 180 - (360 / number);
+            td2.innerHTML = Math.floor((180 - (360 / number)) * 100) / 100;
             tr.appendChild(td2);
 
             td3.innerHTML = 360 / N;
