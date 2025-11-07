@@ -103,6 +103,7 @@
             var centerY = canvas.height/2;
             var hankei = 150;
             //何角形かを求める
+            let number = document.getElementById("number").value;
             let N = document.getElementById("number").value;
             N = Number(N);
             let Denominator = 10;//分母
@@ -147,10 +148,10 @@
             var td3 = document.createElement("td");
             var td4 = document.createElement("td");
 
-            td1.innerHTML = N;
+            td1.innerHTML = point.length;
             tr.appendChild(td1);
 
-            td2.innerHTML = 180 - (360 / N);
+            td2.innerHTML = 180 - (360 / number);
             tr.appendChild(td2);
 
             td3.innerHTML = 360 / N;
