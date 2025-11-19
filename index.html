@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <head>
     <title>正多角形作成サイト</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index.css">
     <meta name="viewport" content="width=device-width", initial-scale="1">
 </head>
 <body>
-    <h1>多角形シミュレーション</h1>
+    <h1>正多角形シミュレーション</h1>
     <canvas id="picture" width="500" height="500"></canvas><br>
     <label for="number">2＜N≦10の間で入力してください:</label>
-    <input type="number" id="number" value="3"><br>
+    <input type="number" id="number" value="3"><br><!--N角形-->
+    <input type="radio" name="how" value="0" checked id="all">
+        <label for="all">一気に描く</label>
+    <input type="radio" name="how" value="1" id="one">
+        <label for="one">一本ずつ描く</label><br>
     <button id="Btn" onclick="paint()">描く</button>
     <table id="figureTable">
         <thead>
@@ -35,74 +39,17 @@
         }
 
         function integer_paint(){
-            document.getElementById("result").innerHTML = "";
-            //描く場所の取得
-            var canvas = document.getElementById("picture");
-            const ctx = canvas.getContext("2d");//構文
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            //座標の格納場所
-            var point = [];
-            //原点を求める
-            var centerX = canvas.width/2;
-            var centerY = canvas.height/2;
-            var hankei = 150;
             //何角形かを求める
             let N = document.getElementById("number").value;
             N = Number(N);
             //一つの回転角度を求める（割合）
             var step = (2 * Math.PI) / N; //円周は2πラジアンだから、Nで割ればいいよね
-            
-            for(let i = 0; i < N; i++){
-                let zahyo = i * step - Math.PI / 2;//初期座標は12時の方向
-                let X = centerX + hankei * Math.cos(zahyo);//中心＋半径×cos(座標)
-                let Y = centerY + hankei * Math.sin(zahyo);
-                point.push({X,Y});
-            }
-            //線を描く
-            ctx.beginPath();
-            ctx.moveTo(point[0].X, point[0].Y);//初期値に移動
-            for(i = 0; i < point.length; i++){
-                ctx.lineTo(point[i].X,point[i].Y);
-            }
-            ctx.closePath();
-            ctx.stroke();
-
-            //表を作成しよう
-            var tr = document.createElement("tr");
-            var td1 = document.createElement("td");
-            var td2 = document.createElement("td");
-            var td3 = document.createElement("td");
-            var td4 = document.createElement("td");
-
-            td1.innerHTML = N;
-            tr.appendChild(td1);
-
-            td2.innerHTML = Math.floor((180 - (360 / N)) * 100) / 100;
-            tr.appendChild(td2);
-
-            td3.innerHTML = Math.floor((360 / N) * 100)/100;
-            tr.appendChild(td3);
-
-            td4.innerHTML = N;
-            tr.appendChild(td4);
-
-            document.getElementById("result").appendChild(tr);
+            write_polgon(N,step);//線を描く
+            table(N,N);//表を作成する
         }
 
         //小数バージョン
         function decimal_paint(){
-            document.getElementById("result").innerHTML = "";
-            //描く場所の取得
-            var canvas = document.getElementById("picture");
-            const ctx = canvas.getContext("2d");//構文
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            //座標の格納場所
-            var point = [];
-            //原点を求める
-            var centerX = canvas.width/2;
-            var centerY = canvas.height/2;
-            var hankei = 150;
-            //何角形かを求める
             let number = document.getElementById("number").value;
             let N = document.getElementById("number").value;
             N = Number(N);
@@ -124,14 +71,64 @@
             let syu = Denominator / a;
             N = Molecule / a;
             //一つの回転角度を求める（割合）
-            var step = syu * (2 * Math.PI) / N; //円周は2πラジアンだから、Nで割ればいいよね
+            var step = syu * (2 * Math.PI) / N; //syu*2πラジアンだから、Nで割ればいいよね
             
+            write_polgon(N,step);
+            table(N,number);
+        }
+
+        //表を作成しよう
+        function table(N,number){
+            var tr = document.createElement("tr");
+            var td1 = document.createElement("td");
+            var td2 = document.createElement("td");
+            var td3 = document.createElement("td");
+            var td4 = document.createElement("td");
+
+            td1.innerHTML = N;
+            tr.appendChild(td1);
+
+            td2.innerHTML = Math.floor((180 - (360 / number)) * 100) / 100;
+            tr.appendChild(td2);
+
+            td3.innerHTML = Math.floor((360 / N) * 100)/100;
+            tr.appendChild(td3);
+
+            td4.innerHTML = N;
+            tr.appendChild(td4);
+
+            document.getElementById("result").appendChild(tr);
+        }
+
+        //線を描く
+        function write_polgon(N,step){
+            //座標の格納場所
+            var point = [];
+            document.getElementById("result").innerHTML = "";
+            //描く場所の取得
+            var canvas = document.getElementById("picture");
+            const ctx = canvas.getContext("2d");//構文
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            //原点を求める
+            var centerX = canvas.width/2;
+            var centerY = canvas.height/2;
+            var hankei = 150;
             for(let i = 0; i < N; i++){
                 let zahyo = i * step - Math.PI / 2;//初期座標は12時の方向
                 let X = centerX + hankei * Math.cos(zahyo);//中心＋半径×cos(座標)
                 let Y = centerY + hankei * Math.sin(zahyo);
                 point.push({X,Y});
             }
+
+            let mode = document.querySelector('input[name="how"]:checked').value;
+            if(mode === "0"){
+                normal(point,ctx);
+            }else{
+                tokusyu(point,ctx);
+            }
+        }
+
+        function normal(point,ctx){
             //線を描く
             ctx.beginPath();
             ctx.moveTo(point[0].X, point[0].Y);//初期値に移動
@@ -140,27 +137,23 @@
             }
             ctx.closePath();
             ctx.stroke();
+        }
 
-            //表を作成しよう
-            var tr = document.createElement("tr");
-            var td1 = document.createElement("td");
-            var td2 = document.createElement("td");
-            var td3 = document.createElement("td");
-            var td4 = document.createElement("td");
-
-            td1.innerHTML = point.length;
-            tr.appendChild(td1);
-
-            td2.innerHTML = Math.floor((180 - (360 / number)) * 100) / 100;
-            tr.appendChild(td2);
-
-            td3.innerHTML = Math.floor((360 / N) * 100) / 100;
-            tr.appendChild(td3);
-
-            td4.innerHTML = N;
-            tr.appendChild(td4);
-
-            document.getElementById("result").appendChild(tr);
+        function tokusyu(point,ctx){
+            let i = 0;
+            ctx.beginPath();
+            ctx.moveTo(point[0].X,point[0].Y);
+            let timer = setInterval(()=>{
+                if(i>=point.length){
+                    ctx.lineTo(point[0].X, point[0].Y);
+                    ctx.stroke();
+                    clearInterval(timer);
+                    return;
+                }
+                ctx.lineTo(point[i].X, point[i].Y);
+                ctx.stroke();
+                i++;
+            },400);//200ミリ秒ごとに描写
         }
     </script>
 </body>
